@@ -12,7 +12,8 @@ var ceiling;
 
 var text1;
 var text2;
-var text3;
+
+var distance = 0;
 
 // gameOver, pause, running
 var status = 'running';
@@ -62,6 +63,7 @@ function update () {
     checkGameOver();
 
     text1.setText(player1.life);
+    text2.setText(distance);
 }
 
 function createBounders () {
@@ -78,8 +80,8 @@ function createBounders () {
 
 function createPlatforms() {
     for (var i=0; i<6; i++) {
-        var x = Math.random()*(400-96) + 20;
-        var y = i*75 + 400;
+        var x = Math.random()*(400 - 96 - 40) + 20;
+        var y = i*70 + 400;
         createOnePlatform(x, y);
     }
     game.physics.arcade.enable(platforms);
@@ -92,7 +94,8 @@ function createOnePlatform(x, y) {
 
     if(rand < 20) {
         platform = game.add.sprite(x, y, 'block');
-    } else if (rand < 40) {
+    }
+    else if (rand < 40) {
         platform = game.add.sprite(x, y, 'nails');
         game.physics.arcade.enable(platform);
         platform.body.setSize(96, 15, 0, 15);
@@ -136,7 +139,7 @@ function createPlayer() {
 
 function createScoreBoard() {
     text1 = game.add.text(10, 10, '', {fill: '#ff0000'});
-    // text2 = game.add.text(480, 10);
+    text2 = game.add.text(350, 10, '', {fill: '#ff0000'});
 }
 
 function playerMove() {
@@ -179,10 +182,11 @@ function scroll() {
     for(var i=0; i<platforms.length; i++) {
         var platform = platforms[i];
         platform.body.position.y -= 2;
-        if(platform.body.position.y < 0) {
+        if(platform.body.position.y <= -20) {
             platform.destroy();
             platforms.splice(i, 1);
-            createOnePlatform(Math.random()*(400 - 96) + 20, 450);
+            distance += 1;
+            createOnePlatform(Math.random()*(400 - 96 - 40) + 20, 400);
         }
     }
 }
@@ -194,7 +198,7 @@ function checkTouchCeiling(player) {
             player.body.velocity.y = 0;
         }
         if(game.time.now - 2000 > last) {
-            player.life -= 4;
+            player.life -= 3;
             game.camera.flash(0xff0000, 100);
             last = game.time.now;
         }
