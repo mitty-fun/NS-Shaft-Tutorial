@@ -19,15 +19,15 @@ var status = 'running';
 
 function preload () {
 
-    game.load.spritesheet('player', '/assets/player.png', 32, 32);
-    game.load.image('block', '/assets/block.png');
-    game.load.image('nails', '/assets/nails.png');
-    game.load.spritesheet('conveyorRight', '/assets/conveyor_right.png', 96, 16);
-    game.load.spritesheet('conveyorLeft', '/assets/conveyor_left.png', 96, 16);
-    game.load.spritesheet('trampoline', '/assets/trampoline.png', 96, 22);
-    game.load.spritesheet('fake', '/assets/fake.png', 96, 36);
-    game.load.image('wall', '/assets/wall.png');
-    game.load.image('ceiling', '/assets/ceiling.png');
+    game.load.spritesheet('player', '../assets/player.png', 32, 32);
+    game.load.image('block', '../assets/block.png');
+    game.load.image('nails', '../assets/nails.png');
+    game.load.spritesheet('conveyorRight', '../assets/conveyor_right.png', 96, 16);
+    game.load.spritesheet('conveyorLeft', '../assets/conveyor_left.png', 96, 16);
+    game.load.spritesheet('trampoline', '../assets/trampoline.png', 96, 22);
+    game.load.spritesheet('fake', '../assets/fake.png', 96, 36);
+    game.load.image('wall', '../assets/wall.png');
+    game.load.image('ceiling', '../assets/ceiling.png');
 
 }
 
