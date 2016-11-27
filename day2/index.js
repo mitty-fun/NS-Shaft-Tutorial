@@ -135,6 +135,8 @@ function createPlayer() {
     player1.animations.add('rightfall', [27, 28, 29, 30], 8, true);
     player1.animations.add('fall', [36, 37, 38, 39], 8, true);
     player1.life = 10;
+    player1.unbeatableTime = 0;
+    player1.touchOn = undefined;
 }
 
 function createScoreBoard() {
@@ -191,16 +193,15 @@ function scroll() {
     }
 }
 
-var last = 0;
 function checkTouchCeiling(player) {
     if(player.body.y < 0) {
         if(player.body.velocity.y < 0) {
             player.body.velocity.y = 0;
         }
-        if(game.time.now - 2000 > last) {
+        if(game.time.now > player.unbeatableTime) {
             player.life -= 3;
             game.camera.flash(0xff0000, 100);
-            last = game.time.now;
+            player.unbeatableTime = game.time.now + 2000;
         }
     }
 }
