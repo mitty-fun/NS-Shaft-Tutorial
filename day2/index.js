@@ -214,47 +214,25 @@ function checkGameOver() {
     }
 }
 
-var last = 0;
-function touchCeiling(player, ceiling) {
-    var current = new Date().getTime();
-    if((current - last) > 1000) {
-        last = current;
-    }
-}
-
 function effect(player, platform) {
-    if(platform.key == 'block') {
-        basicEffect(player, platform);
-    }
-    if(platform.key == 'trampoline') {
-        trampolineEffect(player, platform);
-    }
     if(platform.key == 'conveyorRight') {
         conveyorRightEffect(player, platform);
     }
     if(platform.key == 'conveyorLeft') {
         conveyorLeftEffect(player, platform);
     }
+    if(platform.key == 'trampoline') {
+        trampolineEffect(player, platform);
+    }
     if(platform.key == 'nails') {
         nailsEffect(player, platform);
+    }
+    if(platform.key == 'block') {
+        basicEffect(player, platform);
     }
     if(platform.key == 'fake') {
         fakeEffect(player, platform);
     }
-}
-
-function basicEffect(player, platform) {
-  if (player.isTouch !== platform) {
-      if(player.life < 10) {
-          player.life += 1;
-      }
-      player.isTouch = platform;
-  }
-}
-
-function trampolineEffect(player, platform) {
-    platform.animations.play('jump');
-    player.body.velocity.y = -350;
 }
 
 function conveyorRightEffect(player, platform) {
@@ -265,12 +243,26 @@ function conveyorLeftEffect(player, platform) {
     player.body.x -= 2;
 }
 
+function trampolineEffect(player, platform) {
+    platform.animations.play('jump');
+    player.body.velocity.y = -350;
+}
+
 function nailsEffect(player, platform) {
-    if (player.isTouch !== platform) {
+    if (player.touchOn !== platform) {
         player.life -= 3;
-        player.isTouch = platform;
+        player.touchOn = platform;
         game.camera.flash(0xff0000, 100);
     }
+}
+
+function basicEffect(player, platform) {
+  if (player.touchOn !== platform) {
+      if(player.life < 10) {
+          player.life += 1;
+      }
+      player.touchOn = platform;
+  }
 }
 
 function fakeEffect(player, platform) {
