@@ -29,7 +29,6 @@ function preload () {
     game.load.spritesheet('fake', '../assets/fake.png', 96, 36);
     game.load.image('wall', '../assets/wall.png');
     game.load.image('ceiling', '../assets/ceiling.png');
-
 }
 
 function create () {
@@ -48,7 +47,7 @@ function create () {
     createBounders();
     createPlatforms();
     createPlayer();
-    createScoreBoard();
+    createTextsBoard();
 }
 
 function update () {
@@ -60,7 +59,7 @@ function update () {
     setPlayerAnimate(player);
 
     updatePlatforms();
-    updateScoreBoard();
+    updateTextsBoard();
 
     checkTouchCeiling(player);
     checkGameOver();
@@ -84,7 +83,6 @@ function createPlatforms () {
         var y = i*70 + 400;
         createOnePlatform(x, y);
     }
-    game.physics.arcade.enable(platforms);
 }
 
 function createOnePlatform(x, y) {
@@ -128,22 +126,22 @@ function createPlayer() {
     player = game.add.sprite(200, 50, 'player');
     game.physics.arcade.enable(player);
     player.body.gravity.y = 500;
-    player.animations.add('left', [0, 1, 2, 3], 8, true);
-    player.animations.add('right', [9, 10, 11, 12], 8, true);
-    player.animations.add('leftfall', [18, 19, 20, 21], 8, true);
-    player.animations.add('rightfall', [27, 28, 29, 30], 8, true);
-    player.animations.add('fall', [36, 37, 38, 39], 8, true);
+    player.animations.add('left', [0, 1, 2, 3], 8);
+    player.animations.add('right', [9, 10, 11, 12], 8);
+    player.animations.add('flyleft', [18, 19, 20, 21], 12);
+    player.animations.add('flyright', [27, 28, 29, 30], 12);
+    player.animations.add('fly', [36, 37, 38, 39], 12);
     player.life = 10;
     player.unbeatableTime = 0;
     player.touchOn = undefined;
 }
 
-function createScoreBoard() {
+function createTextsBoard () {
     text1 = game.add.text(10, 10, '', {fill: '#ff0000'});
     text2 = game.add.text(350, 10, '', {fill: '#ff0000'});
 }
 
-function updatePlayer() {
+function updatePlayer () {
     if(cursor.left.isDown) {
         player.body.velocity.x = -250;
     } else if(cursor.right.isDown) {
@@ -159,10 +157,10 @@ function setPlayerAnimate(player) {
     var y = player.body.velocity.y;
 
     if (x < 0 && y > 0) {
-        player.animations.play('leftfall');
+        player.animations.play('flyleft');
     }
     if (x > 0 && y > 0) {
-        player.animations.play('rightfall');
+        player.animations.play('flyright');
     }
     if (x < 0 && y == 0) {
         player.animations.play('left');
@@ -170,8 +168,8 @@ function setPlayerAnimate(player) {
     if (x > 0 && y == 0) {
         player.animations.play('right');
     }
-    if (x == 0 && y > 0) {
-        player.animations.play('fall');
+    if (x == 0 && y != 0) {
+        player.animations.play('fly');
     }
     if (x == 0 && y == 0) {
       player.frame = 8;
@@ -192,7 +190,7 @@ function updatePlatforms () {
     }
 }
 
-function updateScoreBoard () {
+function updateTextsBoard () {
     text1.setText(player.life);
     text2.setText(distance);
 }
@@ -211,10 +209,7 @@ function checkTouchCeiling(player) {
 }
 
 function checkGameOver () {
-    if(player.life <= 0) {
-        gameOver();
-    }
-    if(player.body.y > 500) {
+    if(player.life <= 0 || player.body.y > 500) {
         gameOver();
     }
 }
@@ -262,12 +257,12 @@ function nailsEffect(player, platform) {
 }
 
 function basicEffect(player, platform) {
-  if (player.touchOn !== platform) {
-      if(player.life < 10) {
-          player.life += 1;
-      }
-      player.touchOn = platform;
-  }
+    if (player.touchOn !== platform) {
+        if(player.life < 10) {
+            player.life += 1;
+        }
+        player.touchOn = platform;
+    }
 }
 
 function fakeEffect(player, platform) {
