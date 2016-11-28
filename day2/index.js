@@ -266,10 +266,13 @@ function basicEffect(player, platform) {
 }
 
 function fakeEffect(player, platform) {
-    platform.animations.play('turn');
-    setTimeout(function() {
-      platform.body.checkCollision.up = false;
-    }, 100)
+    if(player.touchOn !== platform) {
+        platform.animations.play('turn');
+        setTimeout(function() {
+            platform.body.checkCollision.up = false;
+        }, 100);
+        player.touchOn = platform;
+    }
 }
 
 function gameOver () {
