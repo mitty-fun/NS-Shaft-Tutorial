@@ -1,7 +1,7 @@
 var game = new Phaser.Game(400, 400, Phaser.AUTO, '',
     { preload: preload, create: create, update: update });
 
-var player1;
+var player;
 var cursor;
 
 var platforms = [];
@@ -53,17 +53,17 @@ function create () {
 
 function update () {
 
-    this.physics.arcade.collide([player1], platforms, effect);
-    this.physics.arcade.collide([player1], [leftWall, rightWall]);
+    this.physics.arcade.collide(player, platforms, effect);
+    this.physics.arcade.collide(player, [leftWall, rightWall]);
 
-    playerMove();
-    playerAnimate(player1);
-    scroll();
-    checkTouchCeiling(player1);
+    updatePlayer();
+    setPlayerAnimate(player);
+
+    updatePlatforms();
+    updateScoreBoard();
+
+    checkTouchCeiling(player);
     checkGameOver();
-
-    text1.setText(player1.life);
-    text2.setText(distance);
 }
 
 function createBounders () {
@@ -78,7 +78,7 @@ function createBounders () {
     ceiling = game.add.image(0, 0, 'ceiling');
 }
 
-function createPlatforms() {
+function createPlatforms () {
     for (var i=0; i<6; i++) {
         var x = Math.random()*(400 - 96 - 40) + 20;
         var y = i*70 + 400;
@@ -94,8 +94,7 @@ function createOnePlatform(x, y) {
 
     if(rand < 20) {
         platform = game.add.sprite(x, y, 'block');
-    }
-    else if (rand < 40) {
+    } else if (rand < 40) {
         platform = game.add.sprite(x, y, 'nails');
         game.physics.arcade.enable(platform);
         platform.body.setSize(96, 15, 0, 15);
@@ -126,17 +125,17 @@ function createOnePlatform(x, y) {
 }
 
 function createPlayer() {
-    player1 = game.add.sprite(200, 50, 'player');
-    game.physics.arcade.enable(player1);
-    player1.body.gravity.y = 500;
-    player1.animations.add('left', [0, 1, 2, 3], 8, true);
-    player1.animations.add('right', [9, 10, 11, 12], 8, true);
-    player1.animations.add('leftfall', [18, 19, 20, 21], 8, true);
-    player1.animations.add('rightfall', [27, 28, 29, 30], 8, true);
-    player1.animations.add('fall', [36, 37, 38, 39], 8, true);
-    player1.life = 10;
-    player1.unbeatableTime = 0;
-    player1.touchOn = undefined;
+    player = game.add.sprite(200, 50, 'player');
+    game.physics.arcade.enable(player);
+    player.body.gravity.y = 500;
+    player.animations.add('left', [0, 1, 2, 3], 8, true);
+    player.animations.add('right', [9, 10, 11, 12], 8, true);
+    player.animations.add('leftfall', [18, 19, 20, 21], 8, true);
+    player.animations.add('rightfall', [27, 28, 29, 30], 8, true);
+    player.animations.add('fall', [36, 37, 38, 39], 8, true);
+    player.life = 10;
+    player.unbeatableTime = 0;
+    player.touchOn = undefined;
 }
 
 function createScoreBoard() {
@@ -144,42 +143,42 @@ function createScoreBoard() {
     text2 = game.add.text(350, 10, '', {fill: '#ff0000'});
 }
 
-function playerMove() {
+function updatePlayer() {
     if(cursor.left.isDown) {
-        player1.body.velocity.x = -250;
+        player.body.velocity.x = -250;
     } else if(cursor.right.isDown) {
-        player1.body.velocity.x = 250;
-        player1.animations.play('right');
+        player.body.velocity.x = 250;
+        player.animations.play('right');
     } else {
-        player1.body.velocity.x = 0;
+        player.body.velocity.x = 0;
     }
 }
 
-function playerAnimate(player) {
-    var x = player1.body.velocity.x;
-    var y = player1.body.velocity.y;
+function setPlayerAnimate(player) {
+    var x = player.body.velocity.x;
+    var y = player.body.velocity.y;
 
     if (x < 0 && y > 0) {
-        player1.animations.play('leftfall');
+        player.animations.play('leftfall');
     }
     if (x > 0 && y > 0) {
-        player1.animations.play('rightfall');
+        player.animations.play('rightfall');
     }
     if (x < 0 && y == 0) {
-        player1.animations.play('left');
+        player.animations.play('left');
     }
     if (x > 0 && y == 0) {
-        player1.animations.play('right');
+        player.animations.play('right');
     }
     if (x == 0 && y > 0) {
-        player1.animations.play('fall');
+        player.animations.play('fall');
     }
     if (x == 0 && y == 0) {
-      player1.frame = 8;
+      player.frame = 8;
     }
 }
 
-function scroll() {
+function updatePlatforms () {
     if(status == 'gameOver') return;
     for(var i=0; i<platforms.length; i++) {
         var platform = platforms[i];
@@ -191,6 +190,11 @@ function scroll() {
             createOnePlatform(Math.random()*(400 - 96 - 40) + 20, 400);
         }
     }
+}
+
+function updateScoreBoard () {
+    text1.setText(player.life);
+    text2.setText(distance);
 }
 
 function checkTouchCeiling(player) {
@@ -206,11 +210,11 @@ function checkTouchCeiling(player) {
     }
 }
 
-function checkGameOver() {
-    if(player1.life <= 0) {
+function checkGameOver () {
+    if(player.life <= 0) {
         gameOver();
     }
-    if(player1.body.y > 500) {
+    if(player.body.y > 500) {
         gameOver();
     }
 }
@@ -273,6 +277,7 @@ function fakeEffect(player, platform) {
     }, 100)
 }
 
-function gameOver() {
+function gameOver () {
     status = 'gameOver';
+    player.body.moves = false;
 }
