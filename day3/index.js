@@ -133,7 +133,7 @@ function createPlayer() {
     setPlayerAttr(player1);
     setPlayerAttr(player2);
 
-    function setPlayer(player) {
+    function setPlayerAttr(player) {
         game.physics.arcade.enable(player);
         player.body.gravity.y = 500;
         player.animations.add('left', [0, 1, 2, 3], 8);
