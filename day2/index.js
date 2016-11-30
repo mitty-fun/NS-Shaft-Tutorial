@@ -12,16 +12,16 @@ var ceiling;
 
 var text1;
 var text2;
+var text3;
+var startBtn;
 
 var distance = 0;
-
-// gameOver, pause, running
 var status = 'running';
 
 function preload () {
 
     game.load.spritesheet('player', '../assets/player.png', 32, 32);
-    game.load.image('block', '../assets/block.png');
+    game.load.image('normal', '../assets/normal.png');
     game.load.image('nails', '../assets/nails.png');
     game.load.spritesheet('conveyorRight', '../assets/conveyor_right.png', 96, 16);
     game.load.spritesheet('conveyorLeft', '../assets/conveyor_left.png', 96, 16);
@@ -29,11 +29,13 @@ function preload () {
     game.load.spritesheet('fake', '../assets/fake.png', 96, 36);
     game.load.image('wall', '../assets/wall.png');
     game.load.image('ceiling', '../assets/ceiling.png');
+    game.load.image('start', '../assets/start.png');
 }
 
 function create () {
 
     cursor = game.input.keyboard.addKeys({
+        'enter': Phaser.Keyboard.ENTER,
         'up': Phaser.Keyboard.UP,
         'down': Phaser.Keyboard.DOWN,
         'left': Phaser.Keyboard.LEFT,
@@ -50,6 +52,10 @@ function create () {
 }
 
 function update () {
+
+    // bad
+    if(status == 'gameOver' && cursor.enter.isDown) reStart();
+    if(status != 'running') return;
 
     this.physics.arcade.collide(player, platforms, effect);
     this.physics.arcade.collide(player, [leftWall, rightWall]);
@@ -92,7 +98,7 @@ function createOnePlatform () {
     var rand = Math.random() * 100;
 
     if(rand < 20) {
-        platform = game.add.sprite(x, y, 'block');
+        platform = game.add.sprite(x, y, 'normal');
     } else if (rand < 40) {
         platform = game.add.sprite(x, y, 'nails');
         game.physics.arcade.enable(platform);
@@ -138,8 +144,11 @@ function createPlayer() {
 }
 
 function createTextsBoard () {
-    text1 = game.add.text(10, 10, '', {fill: '#ff0000'});
-    text2 = game.add.text(350, 10, '', {fill: '#ff0000'});
+    var style = {fill: '#ff0000', fontSize: '20px'}
+    text1 = game.add.text(10, 10, '', style);
+    text2 = game.add.text(350, 10, '', style);
+    text3 = game.add.text(140, 200, 'Enter 重新開始', style);
+    text3.visible = false;
 }
 
 function updatePlayer () {
@@ -178,7 +187,6 @@ function setPlayerAnimate(player) {
 }
 
 function updatePlatforms () {
-    if(status == 'gameOver') return;
     for(var i=0; i<platforms.length; i++) {
         var platform = platforms[i];
         platform.body.position.y -= 2;
@@ -190,8 +198,8 @@ function updatePlatforms () {
 }
 
 function updateTextsBoard () {
-    text1.setText(player.life);
-    text2.setText(distance);
+    text1.setText('life:' + player.life);
+    text2.setText('B' + distance);
 }
 
 function effect(player, platform) {
@@ -207,7 +215,7 @@ function effect(player, platform) {
     if(platform.key == 'nails') {
         nailsEffect(player, platform);
     }
-    if(platform.key == 'block') {
+    if(platform.key == 'normal') {
         basicEffect(player, platform);
     }
     if(platform.key == 'fake') {
@@ -275,6 +283,15 @@ function checkGameOver () {
 }
 
 function gameOver () {
+    text3.visible = true;
+    platforms.forEach(function(s) {s.destroy()});
+    platforms = [];
     status = 'gameOver';
-    player.body.moves = false;
+}
+
+function reStart () {
+    text3.visible = false;
+    distance = 0;
+    createPlayer();
+    status = 'running';
 }
