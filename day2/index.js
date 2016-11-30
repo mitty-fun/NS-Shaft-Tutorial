@@ -2,7 +2,7 @@ var game = new Phaser.Game(400, 400, Phaser.AUTO, '',
     { preload: preload, create: create, update: update });
 
 var player;
-var cursor;
+var keyboard;
 
 var platforms = [];
 
@@ -13,7 +13,6 @@ var ceiling;
 var text1;
 var text2;
 var text3;
-var startBtn;
 
 var distance = 0;
 var status = 'running';
@@ -29,12 +28,11 @@ function preload () {
     game.load.spritesheet('fake', '../assets/fake.png', 96, 36);
     game.load.image('wall', '../assets/wall.png');
     game.load.image('ceiling', '../assets/ceiling.png');
-    game.load.image('start', '../assets/start.png');
 }
 
 function create () {
 
-    cursor = game.input.keyboard.addKeys({
+    keyboard = game.input.keyboard.addKeys({
         'enter': Phaser.Keyboard.ENTER,
         'up': Phaser.Keyboard.UP,
         'down': Phaser.Keyboard.DOWN,
@@ -54,7 +52,7 @@ function create () {
 function update () {
 
     // bad
-    if(status == 'gameOver' && cursor.enter.isDown) reStart();
+    if(status == 'gameOver' && keyboard.enter.isDown) restart();
     if(status != 'running') return;
 
     this.physics.arcade.collide(player, platforms, effect);
@@ -86,12 +84,12 @@ function createPlatforms () {
     if(game.time.now > lastTime + 600) {
         lastTime = game.time.now;
         createOnePlatform();
+        distance += 1;
     }
 }
 
 function createOnePlatform () {
 
-    distance += 1;
     var platform;
     var x = Math.random()*(400 - 96 - 40) + 20;
     var y = 400;
@@ -152,9 +150,9 @@ function createTextsBoard () {
 }
 
 function updatePlayer () {
-    if(cursor.left.isDown) {
+    if(keyboard.left.isDown) {
         player.body.velocity.x = -250;
-    } else if(cursor.right.isDown) {
+    } else if(keyboard.right.isDown) {
         player.body.velocity.x = 250;
     } else {
         player.body.velocity.x = 0;
@@ -289,7 +287,7 @@ function gameOver () {
     status = 'gameOver';
 }
 
-function reStart () {
+function restart () {
     text3.visible = false;
     distance = 0;
     createPlayer();
